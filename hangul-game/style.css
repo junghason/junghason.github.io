@@ -83,6 +83,19 @@ body {
   box-shadow: 0 2px 0 var(--accent-dark), 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* 크롬에서 열기 링크 (앵커를 버튼처럼) */
+a.chrome-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: #34a853;
+  box-shadow: 0 6px 0 #1e7e34, 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+a.chrome-btn:active {
+  box-shadow: 0 2px 0 #1e7e34, 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
 .level-row {
   display: flex;
   gap: 0.8rem;

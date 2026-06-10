@@ -14,6 +14,7 @@
   const choicesEl = document.getElementById("choices");
   const starsEl = document.getElementById("stars");
   const ttsWarn = document.getElementById("tts-warn");
+  const chromeLink = document.getElementById("chrome-link");
   const reward = document.getElementById("reward");
   const rewardEmoji = document.getElementById("reward-emoji");
   const rewardWord = document.getElementById("reward-word");
@@ -41,7 +42,19 @@
     loadVoices();
     speechSynthesis.onvoiceschanged = loadVoices;
   } else {
-    ttsWarn.textContent = "이 브라우저는 소리 읽기를 지원하지 않아요. 크롬으로 열어주세요.";
+    // 인앱 브라우저(카카오톡/네이버 등)는 음성 읽기를 지원하지 않음 → 크롬으로 열기 안내
+    ttsWarn.textContent = "소리가 안 나와요 😢 아래 버튼으로 크롬에서 열어주세요!";
+    showChromeLink();
+  }
+
+  // 안드로이드에서 현재 페이지를 크롬으로 다시 여는 intent 링크를 만든다.
+  function showChromeLink() {
+    if (!chromeLink) return;
+    const host = location.host;
+    const path = location.pathname + location.search;
+    chromeLink.href =
+      "intent://" + host + path + "#Intent;scheme=https;package=com.android.chrome;end";
+    chromeLink.classList.remove("hidden");
   }
 
   function speak(text, opts) {
