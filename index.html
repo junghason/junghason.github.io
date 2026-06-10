@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jungha Son</title>
+  <meta name="description" content="Jungha Son의 개인 홈페이지" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle" aria-label="테마 전환">🌙</button>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="avatar" aria-hidden="true">JS</div>
+      <h1>Jungha Son</h1>
+      <p class="tagline">개발자 · 문제를 코드로 푸는 사람</p>
+      <nav class="social">
+        <a href="https://github.com/junghason" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:linuxson@gmail.com">Email</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>소개</h2>
+      <p>
+        안녕하세요! 저는 새로운 것을 배우고 만드는 것을 좋아하는 개발자입니다.
+        깔끔한 코드와 좋은 사용자 경험에 관심이 많습니다.
+        이 페이지는 제 작업과 생각을 정리하는 공간입니다.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>기술 스택</h2>
+      <ul class="tags">
+        <li>JavaScript</li>
+        <li>TypeScript</li>
+        <li>Python</li>
+        <li>HTML / CSS</li>
+        <li>Linux</li>
+        <li>Git</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>프로젝트</h2>
+      <ul class="projects">
+        <li>
+          <h3>junghason.github.io</h3>
+          <p>지금 보고 계신 개인 홈페이지입니다. 앞으로 계속 발전시킬 예정입니다.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>연락처</h2>
+      <p>
+        궁금한 점이나 함께 하고 싶은 일이 있다면 언제든
+        <a href="mailto:linuxson@gmail.com">linuxson@gmail.com</a> 로 연락 주세요.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="year"></span> Jungha Son. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

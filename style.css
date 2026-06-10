@@ -1,0 +1,181 @@
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f5f6f8;
+  --text: #1a1a1a;
+  --text-soft: #5a5f66;
+  --accent: #4f6ef7;
+  --border: #e6e8eb;
+  --shadow: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] {
+  --bg: #0e1116;
+  --bg-soft: #161b22;
+  --text: #e6e8eb;
+  --text-soft: #9aa3ad;
+  --accent: #7c93ff;
+  --border: #232a33;
+  --shadow: rgba(0, 0, 0, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 6rem 1.5rem 4rem;
+  background: linear-gradient(180deg, var(--bg-soft), var(--bg));
+}
+.hero-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.avatar {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.tagline {
+  color: var(--text-soft);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+.social {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+.social a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.social a:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Main */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: grid;
+  gap: 1.5rem;
+}
+.card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.8rem;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.9rem;
+}
+.card p {
+  color: var(--text-soft);
+}
+.card a {
+  color: var(--accent);
+}
+
+/* Tags */
+.tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.tags li {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Projects */
+.projects {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+}
+.projects h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 4.5rem 1.2rem 3rem;
+  }
+  .hero h1 {
+    font-size: 2rem;
+  }
+}
