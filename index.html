@@ -1,67 +1,85 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jungha Son</title>
-  <meta name="description" content="Jungha Son의 개인 홈페이지" />
+  <meta name="description" content="Personal homepage of Jungha Son" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <button id="theme-toggle" class="theme-toggle" aria-label="테마 전환">🌙</button>
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
 
   <header class="hero">
     <div class="hero-inner">
       <div class="avatar" aria-hidden="true">JS</div>
       <h1>Jungha Son</h1>
-      <p class="tagline">개발자 · 문제를 코드로 푸는 사람</p>
+      <p class="tagline">Data Scientist &middot; ML &amp; LLM Enthusiast</p>
       <nav class="social">
         <a href="https://github.com/junghason" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://scholar.google.com/citations?user=TWOLOYsAAAAJ" target="_blank" rel="noopener">Scholar</a>
       </nav>
     </div>
   </header>
 
   <main>
     <section class="card">
-      <h2>소개</h2>
+      <h2>About</h2>
       <p>
-        안녕하세요! 저는 새로운 것을 배우고 만드는 것을 좋아하는 개발자입니다.
-        깔끔한 코드와 좋은 사용자 경험에 관심이 많습니다.
-        이 페이지는 제 작업과 생각을 정리하는 공간입니다.
+        Hello! I'm passionate about data science, statistics, and machine
+        learning. Recently I've been especially interested in large language
+        models (LLMs) and AX (AI Transformation) &mdash; exploring how AI can be
+        woven into real products and workflows. This page is where I keep track
+        of my work and publications.
       </p>
     </section>
 
     <section class="card">
-      <h2>기술 스택</h2>
+      <h2>Interests &amp; Skills</h2>
       <ul class="tags">
-        <li>JavaScript</li>
-        <li>TypeScript</li>
+        <li>Data Science</li>
+        <li>Statistics</li>
+        <li>Machine Learning</li>
+        <li>LLM</li>
+        <li>AX (AI Transformation)</li>
         <li>Python</li>
-        <li>HTML / CSS</li>
-        <li>Linux</li>
+        <li>SQL</li>
         <li>Git</li>
       </ul>
     </section>
 
+    <section class="card" id="publications">
+      <h2>Publications</h2>
+      <p>
+        You can find the full and up-to-date list of my publications on my
+        Google Scholar profile.
+      </p>
+      <p class="scholar-link">
+        <a href="https://scholar.google.com/citations?user=TWOLOYsAAAAJ" target="_blank" rel="noopener">
+          View on Google Scholar &rarr;
+        </a>
+      </p>
+    </section>
+
     <section class="card">
-      <h2>프로젝트</h2>
+      <h2>Projects</h2>
       <ul class="projects">
         <li>
           <h3>junghason.github.io</h3>
-          <p>지금 보고 계신 개인 홈페이지입니다. 앞으로 계속 발전시킬 예정입니다.</p>
+          <p>This personal homepage. I plan to keep improving it over time.</p>
         </li>
       </ul>
     </section>
 
     <section class="card">
-      <h2>연락처</h2>
+      <h2>Contact</h2>
       <p>
-        궁금한 점이나 함께 하고 싶은 일이 있다면
-        <a href="https://github.com/junghason" target="_blank" rel="noopener">GitHub</a>
-        를 통해 연락 주세요.
+        If you have any questions or would like to collaborate, feel free to
+        reach out via
+        <a href="https://github.com/junghason" target="_blank" rel="noopener">GitHub</a>.
       </p>
     </section>
   </main>

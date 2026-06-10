@@ -162,6 +162,25 @@ main {
   margin-bottom: 0.3rem;
 }
 
+/* Publications */
+.scholar-link {
+  margin-top: 1rem;
+}
+.scholar-link a {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.scholar-link a:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 /* Footer */
 footer {
   text-align: center;
