@@ -28,12 +28,16 @@
     </div>
 
     <button id="start-btn" class="big-btn">출발! ▶️</button>
+    <button class="music-btn music-toggle" aria-label="배경음악 켜기/끄기">🎵</button>
   </section>
 
   <!-- 게임 화면 -->
   <section id="game-screen" class="screen hidden">
     <div class="topbar">
-      <button id="home-btn" class="home-btn" aria-label="처음으로">🏠</button>
+      <div class="topbar-left">
+        <button id="home-btn" class="home-btn" aria-label="처음으로">🏠</button>
+        <button class="home-btn music-btn" aria-label="배경음악 켜기/끄기">🎵</button>
+      </div>
       <span class="score" id="score">🍎 0</span>
       <span class="hearts" id="hearts">❤️❤️❤️</span>
     </div>

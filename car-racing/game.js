@@ -313,6 +313,7 @@ function updateHud() {
 function endGame() {
   running = false;
   cancelAnimationFrame(animId);
+  stopMusic();
   beep(330, 0.2, "triangle");
   overScoreEl.textContent = `🍎 ${score}개 모았어요!`;
   overTitleEl.textContent = score >= 15 ? "와! 최고예요! 🏆" : "참 잘했어요!";
@@ -345,11 +346,26 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") player.targetX = Math.min(b.max, player.x + 70);
 });
 
-// ---- 소리 (간단한 효과음) ----
-let audioCtx;
-function beep(freq, dur, type = "sine", delay = 0) {
+// ---- 소리 (효과음 + 배경음악) ----
+let audioCtx, sfxGain, musicGain;
+
+function ensureAudio() {
+  if (audioCtx) return;
   try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    sfxGain = audioCtx.createGain();
+    sfxGain.gain.value = 1;
+    sfxGain.connect(audioCtx.destination);
+    musicGain = audioCtx.createGain();
+    musicGain.gain.value = musicOn ? 0.5 : 0; // 음악은 효과음보다 작게
+    musicGain.connect(audioCtx.destination);
+  } catch (e) { /* 소리 못 내도 게임은 계속 */ }
+}
+
+function beep(freq, dur, type = "sine", delay = 0) {
+  ensureAudio();
+  if (!audioCtx) return;
+  try {
     const t = audioCtx.currentTime + delay;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
@@ -358,10 +374,87 @@ function beep(freq, dur, type = "sine", delay = 0) {
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(sfxGain);
     osc.start(t);
     osc.stop(t + dur + 0.02);
-  } catch (e) { /* 소리 못 내도 게임은 계속 */ }
+  } catch (e) { /* 무시 */ }
+}
+
+// ---- 배경음악 (밝고 경쾌한 멜로디 반복) ----
+let musicOn = localStorage.getItem("carMusic") !== "off";
+let musicTimer = null, nextNoteTime = 0, musicStep = 0;
+const TEMPO = 138;                 // bpm
+const STEP_DUR = 60 / TEMPO / 2;   // 8분음표 길이(초)
+
+// C장조 동요풍 멜로디 (MIDI 음높이, 0 = 쉼표) — 4마디 반복
+const MELODY = [
+  72, 0, 76, 0, 79, 0, 76, 0,  74, 0, 77, 0, 79, 0, 0, 0,
+  72, 0, 76, 0, 79, 0, 84, 0,  83, 79, 76, 0, 74, 0, 72, 0,
+];
+const BASS = [
+  48, 0, 0, 0, 55, 0, 0, 0,  50, 0, 0, 0, 55, 0, 0, 0,
+  48, 0, 0, 0, 55, 0, 0, 0,  53, 0, 0, 0, 55, 0, 43, 0,
+];
+
+function midiToFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+function musicNote(midi, time, dur, type, vol) {
+  if (!midi) return;
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = midiToFreq(midi);
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(vol, time + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+  osc.connect(g).connect(musicGain);
+  osc.start(time);
+  osc.stop(time + dur + 0.02);
+}
+
+function musicScheduler() {
+  if (!audioCtx) return;
+  while (nextNoteTime < audioCtx.currentTime + 0.15) {
+    const i = musicStep % MELODY.length;
+    musicNote(MELODY[i], nextNoteTime, STEP_DUR * 0.9, "triangle", 0.4);
+    musicNote(BASS[i], nextNoteTime, STEP_DUR * 1.7, "sine", 0.5);
+    nextNoteTime += STEP_DUR;
+    musicStep++;
+  }
+}
+
+function startMusic() {
+  ensureAudio();
+  if (!audioCtx) return;
+  audioCtx.resume();
+  musicGain.gain.value = musicOn ? 0.5 : 0;
+  if (!musicOn) return;
+  musicStep = 0;
+  nextNoteTime = audioCtx.currentTime + 0.1;
+  clearInterval(musicTimer);
+  musicTimer = setInterval(musicScheduler, 40);
+}
+
+function stopMusic() {
+  clearInterval(musicTimer);
+  musicTimer = null;
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  localStorage.setItem("carMusic", musicOn ? "on" : "off");
+  updateMusicBtns();
+  if (musicOn) {
+    if (running) startMusic();
+  } else {
+    if (musicGain) musicGain.gain.value = 0;
+    stopMusic();
+  }
+}
+
+function updateMusicBtns() {
+  const label = musicOn ? "🎵" : "🔇";
+  document.querySelectorAll(".music-btn").forEach((b) => (b.textContent = label));
 }
 
 // ---- 버튼 이벤트 ----
@@ -373,14 +466,21 @@ levelRow.addEventListener("click", (e) => {
   chosenSpeed = btn.dataset.speed;
 });
 
-startBtn.addEventListener("click", () => { if (audioCtx) audioCtx.resume(); startGame(); });
-againBtn.addEventListener("click", startGame);
+startBtn.addEventListener("click", () => { ensureAudio(); if (audioCtx) audioCtx.resume(); startGame(); startMusic(); });
+againBtn.addEventListener("click", () => { startGame(); startMusic(); });
 function goHome() {
   running = false;
   cancelAnimationFrame(animId);
+  stopMusic();
   gameScreen.classList.add("hidden");
   overScreen.classList.add("hidden");
   startScreen.classList.remove("hidden");
 }
 homeBtn.addEventListener("click", goHome);
 overHomeBtn.addEventListener("click", goHome);
+
+// 음악 켜기/끄기 버튼
+document.querySelectorAll(".music-btn").forEach((b) =>
+  b.addEventListener("click", (e) => { e.stopPropagation(); ensureAudio(); toggleMusic(); })
+);
+updateMusicBtns();
