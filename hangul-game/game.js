@@ -42,9 +42,32 @@
     loadVoices();
     speechSynthesis.onvoiceschanged = loadVoices;
   } else {
-    // 인앱 브라우저(카카오톡/네이버 등)는 음성 읽기를 지원하지 않음 → 크롬으로 열기 안내
-    ttsWarn.textContent = "소리가 안 나와요 😢 아래 버튼으로 크롬에서 열어주세요!";
-    showChromeLink();
+    // 인앱 브라우저(카카오톡/네이버 등)는 음성 읽기를 지원하지 않음 → 기기별로 안내
+    handleNoTTS();
+  }
+
+  function isIOS() {
+    return (
+      /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+      // 아이패드(iPadOS)는 데스크톱 모드에서 Mac으로 보고됨
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    );
+  }
+  function isAndroid() {
+    return /android/i.test(navigator.userAgent);
+  }
+
+  function handleNoTTS() {
+    if (isAndroid()) {
+      ttsWarn.textContent = "소리가 안 나와요 😢 아래 버튼으로 크롬에서 열어주세요!";
+      showChromeLink(); // 안드로이드는 intent 링크로 크롬에서 다시 열 수 있음
+    } else if (isIOS()) {
+      // 아이폰/아이패드는 외부 브라우저를 강제로 열 수 없어 안내만 표시
+      ttsWarn.innerHTML =
+        "소리가 안 나와요 😢<br>메뉴(공유)에서 <b>‘Safari로 열기’</b>를 눌러주세요!";
+    } else {
+      ttsWarn.textContent = "이 브라우저는 소리 읽기를 지원하지 않아요. 크롬이나 사파리로 열어주세요.";
+    }
   }
 
   // 안드로이드에서 현재 페이지를 크롬으로 다시 여는 intent 링크를 만든다.
