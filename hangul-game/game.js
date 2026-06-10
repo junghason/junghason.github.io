@@ -27,7 +27,15 @@
   let locked = false; // 중복 터치 방지
   let lastIndex = -1; // 같은 단어 연속 출제 방지
 
-  const PRAISE = ["잘했어요!", "정답이에요!", "최고예요!", "멋져요!", "참 잘했어요!", "와, 똑똑해요!"];
+  const NAME = "유안"; // 아이 이름 (정답·오답 멘트에 사용)
+  const PRAISE = [
+    NAME + "이 잘했어요!",
+    NAME + "이 똑똑해요!",
+    NAME + "이 최고예요!",
+    NAME + "이 멋져요!",
+    NAME + "이 참 잘했어요!",
+    "와, " + NAME + "이 맞혔어요!"
+  ];
 
   // ---- 음성 (Web Speech API) ----
   let koVoice = null;
@@ -147,7 +155,7 @@
       // 오답: 가볍게 흔들고 다시 듣게 해줌 (점수 깎지 않음)
       btn.classList.add("wrong");
       btn.disabled = true;
-      speak("다시 들어볼까요? " + current.word, { rate: 0.78 });
+      speak(NAME + "아, 다시 들어볼까요? " + current.word, { rate: 0.78 });
       setTimeout(() => btn.classList.remove("wrong"), 450);
     }
   }
