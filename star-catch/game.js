@@ -30,10 +30,21 @@ faceImg.src = "assets/player.png";
 // 난이도 (천천히 = 아주 쉬움)
 // fall: 떨어지는 속도, spawn: 새 보물이 나오는 간격(ms)
 const SPEEDS = {
-  slow:   { fall: 1.5, spawn: 1100 },
-  normal: { fall: 2.3, spawn: 820 },
-  fast:   { fall: 3.2, spawn: 620 },
+  slow:   { fall: 2.4, spawn: 850 },
+  normal: { fall: 3.6, spawn: 620 },
+  fast:   { fall: 5.0, spawn: 430 },
 };
+
+// 점수가 오를수록 점점 빨라지고 더 자주 떨어져요 (단계 상승)
+function difficulty(cfg) {
+  const fallRamp = 1 + Math.min(1.4, score * 0.018);   // 최대 +140% 빨라짐
+  const spawnCut = 1 - Math.min(0.5, score * 0.008);   // 최대 50% 더 자주
+  return {
+    fall: cfg.fall * fallRamp,
+    spawn: Math.max(260, cfg.spawn * spawnCut),
+    multi: score >= 25 ? 0.35 : score >= 12 ? 0.18 : 0, // 가끔 두 개 동시에
+  };
+}
 let chosenSpeed = "slow";
 
 // 떨어지는 보물들 (이모지 + 점수)
@@ -47,6 +58,14 @@ const TREASURES = [
 ];
 // 가끔(드물게) 나오는 무지개 — 보너스 + 하트 충전
 const RAINBOW = { e: "🌈", p: 5, heal: true };
+// 받으면 안 되는 폭탄! (그냥 떨어뜨려 보내면 괜찮아요)
+const BOMBS = ["💣", "🌶️"];
+
+// 점수에 따라 폭탄이 나올 확률 (처음엔 없다가 점점 늘어남)
+function bombChance() {
+  if (score < 5) return 0;
+  return Math.min(0.28, 0.08 + score * 0.004);
+}
 
 // 게임 상태
 let W = 0, H = 0, dpr = 1;
@@ -144,16 +163,26 @@ function startGame() {
 
 // ---- 보물 생성 ----
 function spawnItem() {
-  const isRainbow = Math.random() < 0.08; // 드물게 무지개
-  const t = isRainbow ? RAINBOW : TREASURES[(Math.random() * TREASURES.length) | 0];
+  const isBomb = Math.random() < bombChance();
+  const isRainbow = !isBomb && Math.random() < 0.08; // 드물게 무지개
+  let e, p = 1, heal = false;
+  if (isBomb) {
+    e = BOMBS[(Math.random() * BOMBS.length) | 0];
+  } else if (isRainbow) {
+    e = RAINBOW.e; p = RAINBOW.p; heal = true;
+  } else {
+    const t = TREASURES[(Math.random() * TREASURES.length) | 0];
+    e = t.e; p = t.p;
+  }
   const size = 40 + Math.random() * 12;
   const margin = size + 6;
   const baseX = margin + Math.random() * (W - margin * 2);
   items.push({
-    e: t.e,
-    p: t.p,
-    heal: !!t.heal,
+    e,
+    p,
+    heal,
     rainbow: isRainbow,
+    bomb: isBomb,
     x: baseX,
     baseX,
     y: -size,
@@ -167,12 +196,12 @@ function spawnItem() {
 
 // ---- 업데이트 ----
 function update(dt, now) {
-  const cfg = SPEEDS[chosenSpeed];
+  const cfg = difficulty(SPEEDS[chosenSpeed]);
 
-  // 캐릭터가 손가락 위치로 부드럽게 이동
+  // 캐릭터가 손가락 위치로 부드럽게 이동 (빨라진 만큼 반응도 조금 빠르게)
   const b = playerBounds();
   player.targetX = Math.max(b.min, Math.min(b.max, player.targetX));
-  player.x += (player.targetX - player.x) * 0.25;
+  player.x += (player.targetX - player.x) * 0.3;
   player.x = Math.max(b.min, Math.min(b.max, player.x));
 
   // 통통 튀는 기본 움직임 + 점프 물리
@@ -182,15 +211,16 @@ function update(dt, now) {
   if (player.hopY > 0) { player.hopY = 0; player.hopV = 0; }
   if (player.squash > 0) player.squash *= 0.82;
 
-  // 보물 생성
+  // 보물 생성 (가끔 두 개 동시에 떨어져서 더 바빠져요)
   if (now - lastSpawn > cfg.spawn) {
     lastSpawn = now;
     spawnItem();
+    if (Math.random() < cfg.multi) spawnItem();
   }
 
-  // 캐릭터 중심(받는 지점)
+  // 캐릭터 중심(받는 지점) — 판정을 조금 더 정확하게
   const py = player.baseY + player.hopY;
-  const catchR = player.w * 0.62;
+  const catchR = player.w * 0.5;
 
   // 보물 이동 + 받기 판정
   const fallPx = cfg.fall * dt * 0.16 + cfg.fall * 0.5;
@@ -210,9 +240,12 @@ function update(dt, now) {
       continue;
     }
 
-    // 놓침 (바닥 아래로) → 하트 감소
+    // 바닥 아래로 빠져나감
     if (it.y - it.size > H) {
       items.splice(i, 1);
+      // 폭탄은 그냥 흘려보내면 괜찮아요 (놓쳐도 손해 없음)
+      if (it.bomb) continue;
+      // 보물을 놓치면 하트 감소
       combo = 0;
       hearts--;
       shake = 8;
@@ -245,6 +278,21 @@ function update(dt, now) {
 }
 
 function catchItem(it) {
+  // 폭탄을 받으면 펑! 하트가 줄고 콤보가 끊겨요
+  if (it.bomb) {
+    combo = 0;
+    hearts--;
+    shake = 14;
+    player.squash = 0.5;
+    beep(140, 0.22, "sawtooth");
+    beep(90, 0.26, "sawtooth", 0.05);
+    burstSparkles(it.x, it.y, false, true);
+    addFloat(player.x, player.baseY - player.w * 0.7, "펑! 💥", "#d11a2a");
+    updateHud();
+    if (hearts <= 0) return endGame();
+    return;
+  }
+
   combo++;
   if (combo > bestCombo) bestCombo = combo;
   // 콤보 보너스: 3콤보부터 점수 +1씩 추가
@@ -280,11 +328,13 @@ function addFloat(x, y, text, color) {
   floats.push({ x, y, text, color, life: 900 });
 }
 
-function burstSparkles(x, y, rainbow) {
-  const colors = rainbow
+function burstSparkles(x, y, rainbow, bomb) {
+  const colors = bomb
+    ? ["#5a5a5a", "#7a7a7a", "#3a3a3a", "#ff7a3a"]
+    : rainbow
     ? ["#ff5d73", "#ffb703", "#06d6a0", "#4cc9f0", "#b56cff", "#ff8fab"]
     : ["#ffd166", "#ff8fab", "#fff7b0", "#ffffff"];
-  const n = rainbow ? 22 : 12;
+  const n = rainbow ? 22 : bomb ? 18 : 12;
   for (let k = 0; k < n; k++) {
     const ang = (Math.PI * 2 * k) / n + Math.random() * 0.5;
     const sp = 2 + Math.random() * 3.5;
@@ -297,7 +347,7 @@ function burstSparkles(x, y, rainbow) {
       life: 600 + Math.random() * 400,
       rot: Math.random() * Math.PI,
       vr: (Math.random() - 0.5) * 0.4,
-      star: Math.random() < 0.5,
+      star: !bomb && Math.random() < 0.5,
     });
   }
 }
@@ -366,6 +416,11 @@ function draw(now) {
       const g = 0.5 + 0.5 * Math.abs(Math.sin(now * 0.006));
       ctx.shadowColor = "rgba(255,120,200,0.9)";
       ctx.shadowBlur = 12 + g * 12;
+    } else if (it.bomb) {
+      // 위험 표시: 빨갛게 깜빡이는 경고 빛
+      const g = 0.5 + 0.5 * Math.abs(Math.sin(now * 0.012));
+      ctx.shadowColor = "rgba(255,40,40,0.95)";
+      ctx.shadowBlur = 10 + g * 14;
     }
     ctx.font = it.size + "px sans-serif";
     ctx.fillText(it.e, 0, 0);
