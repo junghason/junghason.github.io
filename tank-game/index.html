@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#8ecae6" />
+  <title>풍선 탱크 🎈🚜</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 시작 화면 -->
+  <section id="start-screen" class="screen">
+    <h1 class="title">풍선 <span class="pop">탱크</span> 🎈🚜</h1>
+    <p class="subtitle">탱크를 움직여서<br />하늘의 풍선을 펑! 터뜨려요!</p>
+
+    <div class="how-to">
+      <div class="how-item"><span class="how-emoji">👉</span> 화면을 손가락으로 움직여요</div>
+      <div class="how-item"><span class="how-emoji">👆</span> 화면을 톡 누르면 발사!</div>
+      <div class="how-item"><span class="how-emoji">🎈</span> 풍선을 맞히면 펑! 점수가 올라요</div>
+      <div class="how-item"><span class="how-emoji">💨</span> 풍선을 놓치면 살짝 아쉬워요</div>
+    </div>
+
+    <div class="level-row" id="level-row">
+      <button class="level-btn active" data-speed="slow">천천히 🐢</button>
+      <button class="level-btn" data-speed="normal">보통 🐰</button>
+      <button class="level-btn" data-speed="fast">빠르게 🐆</button>
+    </div>
+
+    <button id="start-btn" class="big-btn">출발! ▶️</button>
+    <button class="music-btn music-toggle" aria-label="배경음악 켜기/끄기">🎵</button>
+  </section>
+
+  <!-- 게임 화면 -->
+  <section id="game-screen" class="screen hidden">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button id="home-btn" class="home-btn" aria-label="처음으로">🏠</button>
+        <button class="home-btn music-btn" aria-label="배경음악 켜기/끄기">🎵</button>
+      </div>
+      <span class="score" id="score">🎈 0</span>
+      <span class="hearts" id="hearts">❤️❤️❤️</span>
+    </div>
+    <canvas id="game" class="game-canvas"></canvas>
+  </section>
+
+  <!-- 결과 화면 -->
+  <section id="over-screen" class="screen hidden">
+    <div class="over-emoji">🎉</div>
+    <h2 class="over-title" id="over-title">참 잘했어요!</h2>
+    <p class="over-score" id="over-score">🎈 0개 터뜨렸어요</p>
+    <button id="again-btn" class="big-btn">다시 할래요! 🔄</button>
+    <button id="over-home-btn" class="big-btn ghost">처음으로 🏠</button>
+  </section>
+
+  <script src="game.js"></script>
+</body>
+</html>
