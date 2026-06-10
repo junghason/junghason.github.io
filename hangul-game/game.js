@@ -89,6 +89,7 @@
     if (koVoice) u.voice = koVoice;
     u.rate = opts.rate || 0.8; // 아이가 듣기 좋게 천천히
     u.pitch = opts.pitch || 1.15;
+    if (opts.onend) u.onend = opts.onend;
     speechSynthesis.speak(u);
   }
 
@@ -158,13 +159,20 @@
     rewardMsg.textContent = praise;
     reward.classList.remove("hidden");
 
-    // "곰! 잘했어요!" 처럼 정답 단어와 칭찬을 읽어줌
-    speak(current.word + ". " + praise, { rate: 0.85 });
-
-    setTimeout(() => {
+    // 칭찬 음성이 끝난 뒤에 다음 문제로 넘어가도록 한다 (음성이 잘리지 않게)
+    let advanced = false;
+    function advance() {
+      if (advanced) return;
+      advanced = true;
       reward.classList.add("hidden");
       nextRound();
-    }, 1800);
+    }
+
+    // "곰. 잘했어요!" 처럼 정답 단어와 칭찬을 읽어주고, 끝나면 다음 문제로
+    speak(current.word + ". " + praise, { rate: 0.85, onend: advance });
+
+    // 안전장치: 음성이 없거나 onend가 안 울리는 브라우저를 위해 최대 대기 후 진행
+    setTimeout(advance, 4000);
   }
 
   // ---- 화면 전환 ----
