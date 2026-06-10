@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#ff7a59" />
+  <title>한글 듣고 찾기</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 시작 화면 -->
+  <section id="start-screen" class="screen">
+    <h1 class="title">한글 듣고 <span class="pop">찾기</span> 🦊</h1>
+    <p class="subtitle">소리를 잘 듣고, 맞는 글자를 콕! 눌러요</p>
+
+    <div class="level-row" id="level-row">
+      <button class="level-btn" data-choices="2">쉬워요 (2개)</button>
+      <button class="level-btn active" data-choices="3">보통 (3개)</button>
+      <button class="level-btn" data-choices="4">어려워요 (4개)</button>
+    </div>
+
+    <button id="start-btn" class="big-btn">시작하기 ▶️</button>
+    <p class="subtitle" id="tts-warn" style="font-size:0.95rem; color:#c0392b;"></p>
+  </section>
+
+  <!-- 게임 화면 -->
+  <section id="game-screen" class="screen hidden">
+    <div class="topbar">
+      <button id="home-btn" class="home-btn" aria-label="처음으로">🏠</button>
+      <span class="stars" id="stars">⭐ 0</span>
+    </div>
+
+    <button id="listen-btn" class="listen-btn"><span class="ear">🔊</span> 다시 듣기</button>
+    <p class="prompt">어떤 글자였을까요?</p>
+
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- 정답 보상 -->
+  <div id="reward" class="reward hidden">
+    <div class="reward-emoji" id="reward-emoji"></div>
+    <div class="reward-word" id="reward-word"></div>
+    <div class="reward-msg" id="reward-msg"></div>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

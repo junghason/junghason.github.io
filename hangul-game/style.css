@@ -1,0 +1,229 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+:root {
+  --bg1: #ffe9a8;
+  --bg2: #ffd1dc;
+  --bg3: #c5e8ff;
+  --card: #ffffff;
+  --text: #3a2c1a;
+  --accent: #ff7a59;
+  --accent-dark: #e85d3b;
+  --correct: #5ec26a;
+  --wrong: #ff8a8a;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+body {
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom);
+}
+
+.screen {
+  width: 100%;
+  max-width: 760px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.hidden { display: none !important; }
+
+/* ---- 시작 화면 ---- */
+.title {
+  font-size: clamp(2.2rem, 8vw, 3.6rem);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.2;
+  text-shadow: 0 3px 0 rgba(255, 255, 255, 0.6);
+}
+.title .pop { color: var(--accent-dark); }
+
+.subtitle {
+  font-size: clamp(1rem, 3.5vw, 1.3rem);
+  text-align: center;
+  opacity: 0.8;
+}
+
+.big-btn {
+  font-family: inherit;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 1rem 2.6rem;
+  box-shadow: 0 6px 0 var(--accent-dark), 0 10px 20px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.big-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--accent-dark), 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.level-row {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.level-btn {
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: 3px solid var(--accent);
+  background: #fff;
+  color: var(--accent-dark);
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+}
+.level-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---- 게임 화면 ---- */
+.topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+.home-btn {
+  font-family: inherit;
+  font-size: 1.6rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
+}
+.stars { letter-spacing: 0.1rem; }
+
+.listen-btn {
+  font-family: inherit;
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 28px;
+  padding: 1.4rem 2.2rem;
+  box-shadow: 0 6px 0 var(--accent-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.listen-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--accent-dark); }
+.listen-btn .ear { font-size: 1.4em; }
+
+.prompt {
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-weight: 700;
+  opacity: 0.85;
+  text-align: center;
+}
+
+.choices {
+  width: 100%;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.choice {
+  font-family: inherit;
+  font-size: clamp(2rem, 9vw, 3.4rem);
+  font-weight: 800;
+  color: var(--text);
+  background: var(--card);
+  border: 4px solid #fff;
+  border-radius: 24px;
+  padding: 1.4rem 0.6rem;
+  min-height: 22vh;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.choice:active { transform: scale(0.96); }
+.choice.correct {
+  background: var(--correct);
+  color: #fff;
+  animation: pop 0.4s ease;
+}
+.choice.wrong {
+  background: var(--wrong);
+  color: #fff;
+  animation: shake 0.4s ease;
+}
+.choice:disabled { cursor: default; }
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* ---- 정답 보상 오버레이 ---- */
+.reward {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+}
+.reward .reward-emoji {
+  font-size: clamp(6rem, 30vw, 11rem);
+  animation: pop 0.5s ease;
+}
+.reward .reward-word {
+  font-size: clamp(2.5rem, 12vw, 4.5rem);
+  font-weight: 800;
+  color: var(--accent-dark);
+}
+.reward .reward-msg {
+  font-size: clamp(1.4rem, 6vw, 2.2rem);
+  font-weight: 800;
+  color: var(--correct);
+}
+
+@media (orientation: landscape) {
+  .choice { min-height: 28vh; }
+}
