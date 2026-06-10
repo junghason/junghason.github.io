@@ -36,27 +36,51 @@ const OBSTACLES = ["🪨", "🚧", "🛢️", "🦔"];
 
 // 게임 상태
 let W = 0, H = 0, dpr = 1;
+let road = { x: 0, w: 0 };
 let player, items, score, hearts, running, lastSpawn, animId, roadOffset, shake;
+
+// 자동차가 도로 안에서만 움직이도록 좌우 경계 계산
+function playerBounds() {
+  return {
+    min: road.x + player.w / 2 + 4,
+    max: road.x + road.w - player.w / 2 - 4,
+  };
+}
 
 // ---- 캔버스 크기 맞추기 ----
 function resize() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
-  W = window.innerWidth;
-  H = window.innerHeight;
+  // 안드로이드 크롬 주소창을 고려해 보이는 영역 기준으로 크기 결정
+  const vv = window.visualViewport;
+  W = Math.round(vv ? vv.width : window.innerWidth);
+  H = Math.round(vv ? vv.height : window.innerHeight);
   canvas.width = W * dpr;
   canvas.height = H * dpr;
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // 도로: 화면 폭에 맞춰 넓히되 너무 넓지 않게 (가로 태블릿 대응)
+  road.w = Math.min(W * 0.92, 760);
+  road.x = (W - road.w) / 2;
+
   if (player) {
     player.y = H - player.h - 30;
-    player.x = Math.max(player.w / 2, Math.min(W - player.w / 2, player.x));
+    const b = playerBounds();
+    player.x = Math.max(b.min, Math.min(b.max, player.x));
+    player.targetX = Math.max(b.min, Math.min(b.max, player.targetX));
   }
 }
 window.addEventListener("resize", resize);
+window.addEventListener("orientationchange", () => setTimeout(resize, 150));
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", resize);
+}
 
 // ---- 게임 시작 ----
 function startGame() {
   resize();
-  const carW = Math.min(110, W * 0.26);
+  const carW = Math.min(120, road.w * 0.22, W * 0.3);
   player = {
     w: carW,
     h: carW * 1.4,
@@ -96,9 +120,11 @@ function update(dt, now) {
   // 도로 흐름
   roadOffset = (roadOffset + cfg.fall * dt * 0.06) % 80;
 
-  // 자동차가 손가락 위치로 부드럽게 이동
+  // 자동차가 손가락 위치로 부드럽게 이동 (도로 안에서만)
+  const b = playerBounds();
+  player.targetX = Math.max(b.min, Math.min(b.max, player.targetX));
   player.x += (player.targetX - player.x) * 0.2;
-  player.x = Math.max(player.w / 2, Math.min(W - player.w / 2, player.x));
+  player.x = Math.max(b.min, Math.min(b.max, player.x));
 
   // 아이템 생성
   if (now - lastSpawn > cfg.spawn) {
@@ -145,9 +171,11 @@ function spawnItem(cfg) {
     ? OBSTACLES[(Math.random() * OBSTACLES.length) | 0]
     : FRUITS[(Math.random() * FRUITS.length) | 0];
   const size = bad ? 56 : 52;
-  const margin = size;
+  const margin = size * 0.7;
+  const lo = road.x + margin;
+  const hi = road.x + road.w - margin;
   items.push({
-    x: margin + Math.random() * (W - margin * 2),
+    x: lo + Math.random() * (hi - lo),
     y: -60,
     emoji,
     bad,
@@ -168,8 +196,8 @@ function draw() {
   ctx.fillRect(-20, 0, W + 40, H);
 
   // 도로
-  const roadW = Math.min(W * 0.8, 520);
-  const roadX = (W - roadW) / 2;
+  const roadW = road.w;
+  const roadX = road.x;
   ctx.fillStyle = "#555b66";
   ctx.fillRect(roadX, 0, roadW, H);
   // 도로 가장자리
@@ -312,8 +340,9 @@ canvas.addEventListener("mousemove", (e) => {
 // 키보드(데스크톱)
 window.addEventListener("keydown", (e) => {
   if (!player || !running) return;
-  if (e.key === "ArrowLeft") player.targetX = Math.max(player.w / 2, player.x - 60);
-  if (e.key === "ArrowRight") player.targetX = Math.min(W - player.w / 2, player.x + 60);
+  const b = playerBounds();
+  if (e.key === "ArrowLeft") player.targetX = Math.max(b.min, player.x - 70);
+  if (e.key === "ArrowRight") player.targetX = Math.min(b.max, player.x + 70);
 });
 
 // ---- 소리 (간단한 효과음) ----
