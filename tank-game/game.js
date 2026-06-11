@@ -29,9 +29,10 @@ faceImg.onload = () => { faceReady = true; };
 faceImg.src = "assets/commander.jpg";
 
 // ---- 물리 상수 ----
-const GRAV = 1700;        // 중력 (px/s^2)
+// 6살이 다루기 쉽도록 살짝 둥실하고(중력↓) 과하지 않은(최대힘↓) 포물선.
+const GRAV = 1450;        // 중력 (px/s^2)
 const BALL_BOUNCE = 0.35; // 포탄이 튕기는 정도
-const MAX_POWER = 1500;   // 최대 발사 속도 (px/s)
+const MAX_POWER = 1250;   // 최대 발사 속도 (px/s)
 const BALLOON_COLORS = [
   "#ff5d73", "#ffb703", "#06d6a0", "#4cc9f0",
   "#b56cff", "#ff8fab", "#52d273",
@@ -197,14 +198,26 @@ function launch(vx, vy) {
 }
 
 // 조준 벡터(당긴 만큼 반대로 발사) → 발사 속도
+// 6살용: 당김 범위를 넓혀 민감도를 낮추고, 항상 "오른쪽 위" 안전한 각도로 보정.
 function aimVelocity() {
   if (!aimStart || !aimNow) return null;
-  let dx = aimStart.x - aimNow.x;
-  let dy = aimStart.y - aimNow.y;
+  const dx = aimStart.x - aimNow.x;   // +면 오른쪽으로 발사
+  const dy = aimStart.y - aimNow.y;   // 화면 y는 아래가 +, 위로 쏘려면 음수
   const len = Math.hypot(dx, dy);
-  if (len < 8) return null;
-  const power = Math.min(len, 260) / 260 * MAX_POWER;
-  return { vx: (dx / len) * power, vy: (dy / len) * power, power };
+  if (len < 16) return null;          // 작은 데드존 → 실수로 톡 쳐도 발사 안 됨
+
+  // 힘: 당김 범위(MIN~MAX)를 화면에 맞춰 넓게 → 1px당 힘 변화가 작아 덜 예민.
+  // 살짝만 당겨도 최소 40%는 나가고, 거기서부터 완만하게 세짐.
+  const MIN_DRAG = 16;
+  const MAX_DRAG = Math.max(200, Math.min(W, H) * 0.6);
+  const t = Math.max(0, Math.min(1, (len - MIN_DRAG) / (MAX_DRAG - MIN_DRAG)));
+  const power = (0.4 + 0.6 * t) * MAX_POWER;
+
+  // 방향: 무조건 오른쪽(|dx|) + 위(up>0)로, 각도는 약 15°~80°로 제한.
+  const up = Math.max(-dy, 0.001);    // 위 성분(항상 양수 → 절대 땅으로 안 쏨)
+  let ang = Math.atan2(up, Math.abs(dx));
+  ang = Math.max(0.26, Math.min(1.40, ang)); // 15°~80°
+  return { vx: Math.cos(ang) * power, vy: -Math.sin(ang) * power, power };
 }
 
 // ---- 업데이트 ----
