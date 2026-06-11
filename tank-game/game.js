@@ -287,9 +287,10 @@ function update(dt) {
       }
     }
     // 멈췄거나 화면 밖 → 포탄 제거 후 다음 발사 가능
+    // 바닥/상자 가리지 않고 "느려지면" 바로 정리해서 다음 발사가 빨리 켜지도록.
     const speed = Math.hypot(ball.vx, ball.vy);
-    if (speed < 40 && ball.y + ball.r >= groundY - 1) ball.rest += dt; else ball.rest = 0;
-    if (ball.x < -80 || ball.x > W + 200 || ball.y > H + 200 || ball.rest > 0.9 || ball.life > 8) {
+    if (speed < 70) ball.rest += dt; else ball.rest = 0;
+    if (ball.x < -80 || ball.x > W + 200 || ball.y > H + 200 || ball.rest > 0.4 || ball.life > 4) {
       ball = null;
     }
   }
