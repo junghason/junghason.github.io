@@ -174,7 +174,7 @@ function beginStage() {
   popped = 0;
   aiming = false; aimStart = null; aimNow = null;
   tank = {
-    x: W * 0.12,
+    x: W * 0.17,
     y: groundY,
     w: Math.min(120, W * 0.26),
     h: Math.min(120, W * 0.26) * 0.8,
